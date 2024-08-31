@@ -20,9 +20,6 @@ jobs:
       - name: Setup Helm
         uses: azure/setup-helm@v1
 
-      - name: Install AWS CLI
-        uses: aws-actions/aws-cli-action@v2
-
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
