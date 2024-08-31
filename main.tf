@@ -1,5 +1,15 @@
 # main.tf
 
+terraform {
+  backend "s3" {
+    bucket         = "eksterraformtatebucket"      # Replace with your S3 bucket name
+    key            = "eks/terraform.tfstate"          # State file path within the S3 bucket
+    region         = "ap-south-1"                     # AWS region where the S3 bucket is located
+    dynamodb_table = "ekslockmaster"        # DynamoDB table for state locking
+    encrypt        = true                             # Encrypt the state file at rest
+  }
+}
+
 # Include provider configurations
 provider "aws" {
   region = var.region
@@ -9,7 +19,7 @@ provider "aws" {
 module "vpc" {
   source = "./vpc"
 
-  vpc_cidr      = var.vpc_cidr
+  vpc_cidr       = var.vpc_cidr
   public_subnets = var.public_subnets
 }
 
@@ -21,8 +31,8 @@ module "eks" {
   instance_type    = var.instance_type
   desired_capacity = var.desired_capacity
 
-  vpc_id          = module.vpc.vpc_id
-  public_subnets  = module.vpc.public_subnets
+  vpc_id         = module.vpc.vpc_id
+  public_subnets = module.vpc.public_subnets
 }
 
 # Outputs
