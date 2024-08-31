@@ -31,7 +31,16 @@ jobs:
           mkdir -p $HOME/.helm/repository
           touch $HOME/.config/helm/repositories/repositories.yaml
           touch $HOME/.helm/repository/repositories.yaml
+
+      - name: Clean up existing Helm repos
+        run: |
+          helm repo remove stable || true
+          helm repo remove myrepo || true
+
+      - name: Add and update Helm repos
+        run: |
           helm repo add stable https://charts.helm.sh/stable
+          helm repo add myrepo https://myrepo.example.com/charts
           helm repo update 
 
       - name: Configure AWS credentials
