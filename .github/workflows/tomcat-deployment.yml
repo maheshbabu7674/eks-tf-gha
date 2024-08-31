@@ -1,0 +1,31 @@
+name: Deploy Tomcat to Kubernetes
+
+on:
+  workflow_dispatch: # Allows manual triggering from the GitHub Actions tab
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Set up AWS CLI
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
+
+    - name: Install kubectl
+      run: |
+          curl -LO "https://dl.k8s.io/release/v1.27.1/bin/linux/amd64/kubectl"
+          chmod +x ./kubectl
+          sudo mv ./kubectl /usr/local/bin/kubectl      
+
+    - name: Set up Kubeconfig
+      run: |
+          aws eks update-kubeconfig --name example-cluster --region ap-south-1
+
+    - name: Deploy Tomcat to Kubernetes
+      run: kubectl apply -f tomcat.deployment.yml
