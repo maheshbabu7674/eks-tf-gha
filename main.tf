@@ -46,4 +46,5 @@ module "eks" {
   desired_capacity = var.desired_capacity
 
   vpc_id           = data.aws_vpc.default.id
+  public_subnets   = data.aws_subnets.default.ids
 }
