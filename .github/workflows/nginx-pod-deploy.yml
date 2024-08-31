@@ -30,4 +30,4 @@ jobs:
           aws eks update-kubeconfig --name example-cluster --region ap-south-1
 
       - name: Apply Kubernetes manifests
-        run: kubectl apply -f nginx-pod.yaml
+        run: kubectl apply -f eks-tf-gha/nginx-pod.yaml
