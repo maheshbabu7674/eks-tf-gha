@@ -25,19 +25,16 @@ jobs:
 
       - name: Setup Helm
         uses: azure/setup-helm@v1
-      - name: Initialize Helm directories
+      - name: Clear Helm cache and directories
         run: |
+          rm -rf $HOME/.config/helm/repositories
+          rm -rf $HOME/.helm/repository
           mkdir -p $HOME/.config/helm/repositories
           mkdir -p $HOME/.helm/repository
           touch $HOME/.config/helm/repositories/repositories.yaml
           touch $HOME/.helm/repository/repositories.yaml
 
-      - name: Clean up existing Helm repos
-        run: |
-          helm repo remove stable || true
-          helm repo remove myrepo || true
-
-      - name: Add and update Helm repos
+      - name: Add and update Helm repositories
         run: |
           helm repo add stable https://charts.helm.sh/stable
           helm repo add myrepo https://myrepo.example.com/charts
