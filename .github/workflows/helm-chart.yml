@@ -64,7 +64,7 @@ jobs:
       - name: Delete Old Helm Releases
         run: |
           # Optionally set the number of releases to keep
-          MAX_RELEASES_TO_KEEP=5
+          MAX_RELEASES_TO_KEEP=0
 
           # Read existing release names from the file
           releases=$(cat releases.txt)
