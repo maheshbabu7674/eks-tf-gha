@@ -11,10 +11,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up AWS CLI
-        uses: aws-actions/setup-aws-cli@v2
-        with:
-          version: '2.x'  # Use the desired version of AWS CLI (default is 2.x)
+      # - name: Set up AWS CLI
+      #   uses: aws-actions/setup-aws-cli@v2
+      #   with:
+      #     version: '2.x'  # Use the desired version of AWS CLI (default is 2.x)
 
       - name: Verify AWS CLI installation
         run: aws --version
