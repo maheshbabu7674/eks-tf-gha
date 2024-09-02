@@ -57,6 +57,27 @@ jobs:
         id: generate-release-name
         run: echo "RELEASE_NAME=my-tomcat-helm-release-$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
 
-      - name: Install or Upgrade Helm Release
+      - name: List Helm Releases
+        id: list-releases
+        run: helm ls --namespace default --output json | jq -r '.[] | .name' > releases.txt
+
+      - name: Delete Old Helm Releases
         run: |
-          helm upgrade --install ${{ env.RELEASE_NAME }} ./tomcat --namespace eks-npd
+          # Optionally set the number of releases to keep
+          MAX_RELEASES_TO_KEEP=5
+
+          # Read existing release names from the file
+          releases=$(cat releases.txt)
+
+          # Get the list of releases to delete (excluding the most recent ones)
+          releases_to_delete=$(echo "$releases" | head -n -${MAX_RELEASES_TO_KEEP})
+
+          # Delete the old releases
+          for release in $releases_to_delete; do
+            echo "Deleting release $release"
+            helm uninstall "$release" --namespace default
+          done
+
+      - name: Install New Helm Release
+        run: |
+          helm upgrade --install ${{ env.RELEASE_NAME }} ./tomcat --namespace default
