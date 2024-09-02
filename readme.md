@@ -1,6 +1,6 @@
 Encode the kubeconfig File:
 
-[Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes((Get-Content -Raw -Path "$HOME\.kube\config")))
+[Convert]::ToBase64String([IO.File]::ReadAllBytes("$env:USERPROFILE\.kube\config")) > kubeconfig_base64.txt
 
 
 Aws kube config command:
