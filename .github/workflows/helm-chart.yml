@@ -14,7 +14,11 @@ jobs:
         run: |
           curl -LO "https://dl.k8s.io/release/v1.27.1/bin/linux/amd64/kubectl"
           chmod +x ./kubectl
-          sudo mv ./kubectl /usr/local/bin/kubectl        
+          sudo mv ./kubectl /usr/local/bin/kubectl 
+          
+      - name: Set up kubeconfig
+        run: |
+          aws eks update-kubeconfig --name example-cluster --region ap-south-1         
 
       - name: Set up Kubernetes context
         env:
@@ -25,20 +29,6 @@ jobs:
 
       - name: Setup Helm
         uses: azure/setup-helm@v1
-      - name: Clear Helm cache and directories
-        run: |
-          rm -rf $HOME/.config/helm/repositories
-          rm -rf $HOME/.helm/repository
-          mkdir -p $HOME/.config/helm/repositories
-          mkdir -p $HOME/.helm/repository
-          touch $HOME/.config/helm/repositories/repositories.yaml
-          touch $HOME/.helm/repository/repositories.yaml
-
-      - name: Add and update Helm repositories
-        run: |
-          helm repo add stable https://charts.helm.sh/stable
-          helm repo add myrepo https://myrepo.example.com/charts
-          helm repo update 
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -47,8 +37,5 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-south-1  # Specify the AWS region of your EKS cluster
 
-      - name: Deploy Helm Chart
-        run: |
-          helm repo add myrepo https://myrepo.example.com/charts
-          helm repo update
-          helm upgrade --install myrelease myrepo/mychart --namespace eks-npd --values values.yaml
+      - name: Deploy Tomcat to Kubernetes
+        run: helm install my-tomcat-helm-release ./tomcat --namespace eks-npd
