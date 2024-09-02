@@ -53,5 +53,23 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-south-1  # Specify the AWS region of your EKS cluster
 
-      - name: Deploy Tomcat to Kubernetes
-        run: helm install my-tomcat-helm-release ./tomcat --namespace eks-npd
+      - name: Check Helm Release
+        id: helm-check
+        run: |
+          if helm ls --namespace eks-npd | grep -q 'my-tomcat-helm-release'; then
+            echo "Release exists"
+            echo "RELEASE_EXISTS=true" >> $GITHUB_ENV
+          else
+            echo "Release does not exist"
+            echo "RELEASE_EXISTS=false" >> $GITHUB_ENV
+          fi
+
+      - name: Uninstall Helm Release if Exists
+        if: env.RELEASE_EXISTS == 'true'
+        run: |
+          helm uninstall my-tomcat-helm-release --namespace eks-npd
+
+      - name: Install or Upgrade Helm Release
+        run: |
+          helm install my-tomcat-helm-release ./tomcat --namespace eks-npd
+        if: env.RELEASE_EXISTS == 'false'
