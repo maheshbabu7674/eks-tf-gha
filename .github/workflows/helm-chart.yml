@@ -72,4 +72,4 @@ jobs:
       - name: Install or Upgrade Helm Release
         run: |
           helm install my-tomcat-helm-release ./tomcat --namespace eks-npd
-        if: env.RELEASE_EXISTS == 'false'
+        if: env.RELEASE_EXISTS == 'true'
