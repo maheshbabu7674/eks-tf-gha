@@ -2,6 +2,16 @@ name: 'Terraform Apply EKS'
 
 on:
   workflow_dispatch: # Allows manual triggering from the GitHub Actions tab
+    inputs:
+      pipeline_task:
+        description: 'Task'
+        required: true
+        default: 'Plan only'
+        type: choice
+        options:
+          - 'Plan only'
+          - 'Plan and Apply'
+          - 'Plan and Destroy'
 
 jobs:
   terraform:
@@ -23,17 +33,20 @@ jobs:
     - name: Terraform Plan
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}   
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      if: ${{ github.event.inputs.pipeline_task == 'Plan and Apply' || github.event.inputs.pipeline_task == 'Plan and Destroy' || github.event.inputs.pipeline_task == 'Plan only' }}
       run: terraform plan
 
     - name: Terraform Apply
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      if: ${{ github.event.inputs.pipeline_task == 'Plan and Apply' }}  
       run: terraform apply -auto-approve
       
     - name: Terraform destroy
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      if: ${{ github.event.inputs.pipeline_task == 'Plan and Destroy' }}  
       run: terraform destroy -auto-approve  
