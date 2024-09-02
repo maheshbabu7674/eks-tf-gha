@@ -53,5 +53,10 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-south-1  # Specify the AWS region of your EKS cluster
 
-      - name: Deploy Tomcat to Kubernetes
-        run: helm install my-tomcat-helm-release ./tomcat --namespace eks-npd
+      - name: Generate Unique Release Name
+        id: generate-release-name
+        run: echo "RELEASE_NAME=my-tomcat-helm-release-$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
+
+      - name: Install or Upgrade Helm Release
+        run: |
+          helm upgrade --install ${{ env.RELEASE_NAME }} ./tomcat --namespace eks-npd
